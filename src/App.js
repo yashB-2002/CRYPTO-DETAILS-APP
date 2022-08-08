@@ -1,23 +1,47 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useState } from "react";
+import "./App.css";
+import Coindetail from "./Coindetail";
 
 function App() {
+  const url = "https://api.coinstats.app/public/v1/coins?skip=0";
+  const [coinsdetails, setCoinsDetails] = useState([]);
+  const [searchOption, setSearchOption] = useState("");
+  useEffect(() => {
+    fetchData();
+  }, []);
+  const filteredResult = coinsdetails.filter((coin) => {
+    return coin.name.toLowerCase().includes(searchOption.toLowerCase());
+  });
+  const fetchData = async () => {
+    const data = await fetch(url);
+    const json = await data.json();
+    // console.log(json.coins);
+    setCoinsDetails(json.coins);
+  };
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div className="input_component">
+        <input
+          type="text"
+          onChange={(e) => setSearchOption(e.target.value)}
+          placeholder="Search your desired crypto"
+        />
+      </div>
+
+      <div className="box_component">
+        {filteredResult.map((coin, idx) => {
+          return (
+            <Coindetail
+              name={coin.name}
+              icon={coin.icon}
+              price={coin.price}
+              symbol={coin.symbol}
+              volume={coin.volume}
+              websiteUrl={coin.websiteUrl}
+            />
+          );
+        })}
+      </div>
     </div>
   );
 }
